@@ -1,0 +1,14 @@
+== G10 persistence
+built in 38.7609 s, saved, recorded 50 query results
+--- fresh process: load + 50 queries
+compared 500 (query, rank) results: 0 differences -> IDENTICAL
+--- corrupted byte at offset 1779443 of 3558887: 0x05 -> 0xfa (verified with cmp -l: exactly 1 byte differs)
+load rejected: /tmp/sir_gates/g10_corrupt.idx: index file is corrupted (SHA-256 checksum mismatch)
+exit code: 3
+--- truncated file (last 1000 bytes removed)
+load rejected: /tmp/sir_gates/g10_trunc.idx: index file is truncated or has trailing data (header declares 3558887 bytes, file has 3557887)
+exit code: 3
+--- missing file
+load rejected: index file not found: /tmp/sir_gates/nope.idx (build it with sir_build_index)
+exit code: 3
+G10: PASS (identical results across processes; corrupt/truncated/missing files rejected with clear errors, no crash)

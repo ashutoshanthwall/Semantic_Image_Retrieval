@@ -1,0 +1,66 @@
+loading metadata, embeddings and index...
+starting text encoder...
+ready: 31013 images, HNSW M=16 efSearch=80
+
+query: "a dog playing in snow"   (text embedding 24.3 ms, excluded from retrieval latency)
+Brute force (exact) top-5  (retrieval 9.407 ms)
+  1. 0.3336  3202360797  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/3202360797.jpg
+  2. 0.3331  391723162  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/391723162.jpg
+  3. 0.3321  96973080  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/96973080.jpg
+  4. 0.3319  2085400856  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/2085400856.jpg
+  5. 0.3274  101654506  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/101654506.jpg
+
+HNSW top-5  (retrieval 0.224 ms)
+  1. 0.3336  3202360797  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/3202360797.jpg
+  2. 0.3331  391723162  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/391723162.jpg
+  3. 0.3321  96973080  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/96973080.jpg
+  4. 0.3319  2085400856  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/2085400856.jpg
+  5. 0.3274  101654506  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/101654506.jpg
+
+Recall@5 (HNSW vs brute force): 1.00   speedup: 42.1x   (median of 5 runs each)
+== CLI error handling
+--- K=0
+loading metadata, embeddings and index...
+starting text encoder...
+ready: 31013 images, HNSW M=16 efSearch=80
+invalid query: K must be a positive integer, got 0
+--- K>N
+loading metadata, embeddings and index...
+starting text encoder...
+ready: 31013 images, HNSW M=16 efSearch=80
+invalid query: K=99999 exceeds the number of indexed images (N=31013)
+--- missing index
+loading metadata, embeddings and index...
+error: index file not found: /tmp/sir_gates/nope.idx (build it with sir_build_index)
+--- corrupted index
+loading metadata, embeddings and index...
+error: /tmp/sir_gates/g10_corrupt.idx: index file is corrupted (SHA-256 checksum mismatch)
+--- REPL: whitespace-only query, then a real query, then exit
+loading metadata, embeddings and index...
+starting text encoder...
+ready: 31013 images, HNSW M=16 efSearch=80
+
+search> invalid query: query is empty or whitespace-only
+
+search> invalid query: query is empty or whitespace-only
+
+search> 
+query: "two men playing guitars on a stage"   (text embedding 24.0 ms, excluded from retrieval latency)
+Brute force (exact) top-3  (retrieval 9.670 ms)
+  1. 0.3300  3351360323  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/3351360323.jpg
+  2. 0.3272  224069602  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/224069602.jpg
+  3. 0.3246  3027458414  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/3027458414.jpg
+
+HNSW top-3  (retrieval 0.266 ms)
+  1. 0.3300  3351360323  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/3351360323.jpg
+  2. 0.3272  224069602  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/224069602.jpg
+  3. 0.3246  3027458414  /home/ashutosh/PROJECTS/PBL_PROJECT/data/raw/flickr30k/flickr30k-images/3027458414.jpg
+
+Recall@3 (HNSW vs brute force): 1.00   speedup: 36.4x   (median of 5 runs each)
+
+search> 
+Leftover text_encoder_server processes after all CLI runs: 0 (RAII shutdown works).
+Relevance: the 5 returned paths for "a dog playing in snow" are the same 5 images opened
+and viewed at G4 (all dogs in snow); all paths exist on disk. Note: single-query CLI
+latencies are unpinned and illustrative; use the benchmark for measured latency.
+G11: PASS
