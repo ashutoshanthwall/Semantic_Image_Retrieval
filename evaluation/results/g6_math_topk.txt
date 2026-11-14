@@ -1,0 +1,2 @@
+[G6] top-K vs full sort: 100/100 trials exact
+154 checks passed, 0 failed
