@@ -1,0 +1,95 @@
+== G9 pruning ablation (M=16, efConstruction=200, seed=42, 1005 queries, Recall@10 vs brute force)
+=== selection=heuristic keepPruned=0 protect=1
+embeddings: 31013 x 512 (sha256 53cc14e4cdcc207c...)
+HNSW: M=16 efConstruction=200 seed=42 selection=heuristic keepPruned=0 protectLastInEdge=1
+built in 26.17 s; saved to /tmp/sir_gates/abl.idx (2605 KiB)
+graph: nodes=31013 maxLevel=5 meanDegree(L0)=18.64 reachable(L0)=31013/31013
+nodes per level: L0=31013 L1=1924 L2=121 L3=11 L4=3 L5=1
+layer-0 nodes with in-degree 0 (excluding entry): 0
+memoryBytes(): HNSW graph 5767500, embeddings 63514624
+Recall@10 vs brute force over 1005 queries:
+  efSearch=  20  Recall@10=0.7354  mean distance evaluations/query=466
+  efSearch=  40  Recall@10=0.8490  mean distance evaluations/query=732
+  efSearch=  80  Recall@10=0.9276  mean distance evaluations/query=1216
+  efSearch= 120  Recall@10=0.9569  mean distance evaluations/query=1665
+=== selection=heuristic keepPruned=1 protect=1
+embeddings: 31013 x 512 (sha256 53cc14e4cdcc207c...)
+HNSW: M=16 efConstruction=200 seed=42 selection=heuristic keepPruned=1 protectLastInEdge=1
+built in 39.10 s; saved to /tmp/sir_gates/abl.idx (3475 KiB)
+graph: nodes=31013 maxLevel=5 meanDegree(L0)=25.54 reachable(L0)=31013/31013
+nodes per level: L0=31013 L1=1924 L2=121 L3=11 L4=3 L5=1
+layer-0 nodes with in-degree 0 (excluding entry): 0
+memoryBytes(): HNSW graph 5767500, embeddings 63514624
+Recall@10 vs brute force over 1005 queries:
+  efSearch=  20  Recall@10=0.7867  mean distance evaluations/query=547
+  efSearch=  40  Recall@10=0.8815  mean distance evaluations/query=847
+  efSearch=  80  Recall@10=0.9456  mean distance evaluations/query=1384
+  efSearch= 120  Recall@10=0.9679  mean distance evaluations/query=1879
+=== selection=naive keepPruned=0 protect=1
+embeddings: 31013 x 512 (sha256 53cc14e4cdcc207c...)
+HNSW: M=16 efConstruction=200 seed=42 selection=naive keepPruned=0 protectLastInEdge=1
+built in 21.27 s; saved to /tmp/sir_gates/abl.idx (3311 KiB)
+graph: nodes=31013 maxLevel=5 meanDegree(L0)=24.19 reachable(L0)=31013/31013
+nodes per level: L0=31013 L1=1924 L2=121 L3=11 L4=3 L5=1
+layer-0 nodes with in-degree 0 (excluding entry): 0
+memoryBytes(): HNSW graph 5767500, embeddings 63514624
+Recall@10 vs brute force over 1005 queries:
+  efSearch=  20  Recall@10=0.7058  mean distance evaluations/query=466
+  efSearch=  40  Recall@10=0.8067  mean distance evaluations/query=693
+  efSearch=  80  Recall@10=0.8893  mean distance evaluations/query=1103
+  efSearch= 120  Recall@10=0.9250  mean distance evaluations/query=1481
+=== selection=naive keepPruned=0 protect=0
+embeddings: 31013 x 512 (sha256 53cc14e4cdcc207c...)
+HNSW: M=16 efConstruction=200 seed=42 selection=naive keepPruned=0 protectLastInEdge=0
+built in 21.17 s; saved to /tmp/sir_gates/abl.idx (3311 KiB)
+graph: nodes=31013 maxLevel=5 meanDegree(L0)=24.19 reachable(L0)=31002/31013
+nodes per level: L0=31013 L1=1924 L2=121 L3=11 L4=3 L5=1
+layer-0 nodes with in-degree 0 (excluding entry): 11
+  unreachable id=347 level=0 outDegree=16 exact NN: 14664(sim 0.76190) 11782(sim 0.72569)
+  unreachable id=383 level=0 outDegree=17 exact NN: 1395(sim 0.67146) 4142(sim 0.64309)
+  unreachable id=1021 level=0 outDegree=17 exact NN: 20810(sim 0.67481) 21223(sim 0.66296)
+  unreachable id=1951 level=0 outDegree=16 exact NN: 11364(sim 0.73014) 20253(sim 0.70911)
+  unreachable id=2782 level=0 outDegree=16 exact NN: 26365(sim 0.72562) 18821(sim 0.71775)
+  unreachable id=4286 level=0 outDegree=16 exact NN: 28172(sim 0.70131) 10888(sim 0.70023)
+  unreachable id=4816 level=0 outDegree=16 exact NN: 10650(sim 0.67603) 18714(sim 0.67518)
+  unreachable id=6242 level=0 outDegree=16 exact NN: 23046(sim 0.75602) 19452(sim 0.73048)
+  unreachable id=6318 level=0 outDegree=16 exact NN: 20900(sim 0.71310) 23707(sim 0.70439)
+  unreachable id=6427 level=0 outDegree=16 exact NN: 24221(sim 0.74860) 7954(sim 0.72796)
+  unreachable id=12472 level=0 outDegree=16 exact NN: 15312(sim 0.86675) 10571(sim 0.86544)
+memoryBytes(): HNSW graph 5767500, embeddings 63514624
+Recall@10 vs brute force over 1005 queries:
+  efSearch=  20  Recall@10=0.7055  mean distance evaluations/query=466
+  efSearch=  40  Recall@10=0.8066  mean distance evaluations/query=693
+  efSearch=  80  Recall@10=0.8888  mean distance evaluations/query=1103
+  efSearch= 120  Recall@10=0.9246  mean distance evaluations/query=1480
+=== selection=heuristic keepPruned=0 protect=0
+embeddings: 31013 x 512 (sha256 53cc14e4cdcc207c...)
+HNSW: M=16 efConstruction=200 seed=42 selection=heuristic keepPruned=0 protectLastInEdge=0
+built in 25.93 s; saved to /tmp/sir_gates/abl.idx (2605 KiB)
+graph: nodes=31013 maxLevel=5 meanDegree(L0)=18.64 reachable(L0)=31009/31013
+nodes per level: L0=31013 L1=1924 L2=121 L3=11 L4=3 L5=1
+layer-0 nodes with in-degree 0 (excluding entry): 4
+  unreachable id=728 level=1 outDegree=1 exact NN: 14986(sim 0.58514) 15708(sim 0.55840)
+  unreachable id=9004 level=0 outDegree=2 exact NN: 30293(sim 0.72594) 14731(sim 0.70753)
+  unreachable id=17782 level=0 outDegree=1 exact NN: 18743(sim 0.62467) 684(sim 0.60691)
+  unreachable id=19061 level=0 outDegree=2 exact NN: 25047(sim 0.75516) 19895(sim 0.74638)
+memoryBytes(): HNSW graph 5767500, embeddings 63514624
+Recall@10 vs brute force over 1005 queries:
+  efSearch=  20  Recall@10=0.7349  mean distance evaluations/query=466
+  efSearch=  40  Recall@10=0.8487  mean distance evaluations/query=732
+  efSearch=  80  Recall@10=0.9273  mean distance evaluations/query=1216
+  efSearch= 120  Recall@10=0.9565  mean distance evaluations/query=1665
+=== selection=heuristic keepPruned=1 protect=0
+embeddings: 31013 x 512 (sha256 53cc14e4cdcc207c...)
+HNSW: M=16 efConstruction=200 seed=42 selection=heuristic keepPruned=1 protectLastInEdge=0
+built in 38.34 s; saved to /tmp/sir_gates/abl.idx (3475 KiB)
+graph: nodes=31013 maxLevel=5 meanDegree(L0)=25.54 reachable(L0)=31012/31013
+nodes per level: L0=31013 L1=1924 L2=121 L3=11 L4=3 L5=1
+layer-0 nodes with in-degree 0 (excluding entry): 1
+  unreachable id=728 level=1 outDegree=16 exact NN: 14986(sim 0.58514) 15708(sim 0.55840)
+memoryBytes(): HNSW graph 5767500, embeddings 63514624
+Recall@10 vs brute force over 1005 queries:
+  efSearch=  20  Recall@10=0.7865  mean distance evaluations/query=547
+  efSearch=  40  Recall@10=0.8814  mean distance evaluations/query=847
+  efSearch=  80  Recall@10=0.9455  mean distance evaluations/query=1384
+  efSearch= 120  Recall@10=0.9678  mean distance evaluations/query=1879
