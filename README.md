@@ -11,8 +11,8 @@ exact brute-force search, and what does it cost in recall?
 
 | | Brute force (exact) | HNSW, efSearch = 80 | HNSW, efSearch = 20 |
 |---|---|---|---|
-| Median latency / query | 7.487 ms | 0.538 ms | 0.191 ms |
-| Speedup (median) | 1× | **13.9×** | 39.3× |
+| Median latency / query | 7.448 ms | 0.562 ms | 0.194 ms |
+| Speedup (median) | 1× | **13.3×** | 38.4× |
 | Recall@10 vs exact | 1.000 | **0.946** | 0.787 |
 | Distance evaluations / query | 31,013 | 1,384 | 547 |
 | Text→image R@1 (held-out captions) | 0.281 | 0.272 | 0.246 |
@@ -340,10 +340,10 @@ the project's own Gaussian generator.
 
 ## 5. Benchmark
 
-The numbers in this section come from the pinned benchmark run made before the
-simplification rewrite. The rewrite returns bit-identical search results (§4), so every
-recall, distance-count and quality number still holds. Latency and memory depend on the
-code, so re-run `sir_benchmark` (§9) to refresh them.
+The numbers in this section come from a pinned benchmark run of the current code (after
+the simplification rewrite). Every recall, distance-count and quality number is identical
+to the run made before the rewrite, as expected from bit-identical search results (§4).
+Latencies differ from that earlier run by a few percent (§8).
 
 ### 5.1 Protocol
 - Release build with exactly `-O3 -march=native -DNDEBUG`, single thread.
@@ -361,25 +361,25 @@ code, so re-run `sir_benchmark` (§9) to refresh them.
 - Environment (from `system.json`):
   - CPU: i7-13620H, 16 logical / 10 physical cores
   - RAM: 15.3 GiB
-  - OS: Fedora 44, kernel 7.2.5
+  - OS: Fedora 45, kernel 7.3.3
   - Compiler: GCC 16.2.1
   - CPU governor: `powersave` (intel_pstate)
   - On AC power
-  - Load average at start: 0.39
-  - Git commit: `9c14e0e`
+  - Load average at start: 0.25
+  - Git commit: `f2bd316`
   - HNSW seed: 42
 
 ### 5.2 Results (M = 16, efConstruction = 200)
 
 | Selection | efSearch | Median ms | p95 ms | Speedup | Recall@5 | Recall@10 | Dist evals/q | Build s |
 |---|---|---|---|---|---|---|---|---|
-| brute force | – | 7.4875 | 7.5737 | 1.0× | 1 | 1 | 31,013 | – |
-| heuristic + keepPruned (default) | 20 | 0.1905 | 0.2586 | 39.3× | 0.8094 | 0.7867 | 547 | 37.2 |
-| | 40 | 0.3144 | 0.4038 | 23.8× | 0.8973 | 0.8815 | 847 | |
-| | 80 | 0.5381 | 0.6638 | 13.9× | 0.9562 | 0.9456 | 1,384 | |
-| | 120 | 0.7465 | 0.9160 | 10.0× | 0.9765 | 0.9679 | 1,879 | |
-| heuristic | 80 | 0.4796 | 0.5830 | 15.6× | 0.9419 | 0.9276 | 1,216 | 24.9 |
-| naive | 80 | 0.4302 | 0.5628 | 17.4× | 0.9029 | 0.8893 | 1,103 | 19.9 |
+| brute force | – | 7.4484 | 7.5225 | 1.0× | 1 | 1 | 31,013 | – |
+| heuristic + keepPruned (default) | 20 | 0.1938 | 0.2628 | 38.4× | 0.8094 | 0.7867 | 547 | 42.5 |
+| | 40 | 0.3220 | 0.4104 | 23.1× | 0.8973 | 0.8815 | 847 | |
+| | 80 | 0.5618 | 0.6914 | 13.3× | 0.9562 | 0.9456 | 1,384 | |
+| | 120 | 0.7686 | 0.9436 | 9.7× | 0.9765 | 0.9679 | 1,879 | |
+| heuristic | 80 | 0.5046 | 0.6215 | 14.8× | 0.9419 | 0.9276 | 1,216 | 27.2 |
+| naive | 80 | 0.4635 | 0.6236 | 16.1× | 0.9029 | 0.8893 | 1,103 | 23.2 |
 
 Full sweep for every variant, mean latencies and fraction of perfect-recall queries:
 [`latency_recall.csv`](evaluation/benchmark_results/latency_recall.csv) and
@@ -389,16 +389,17 @@ Full sweep for every variant, mean latencies and fraction of perfect-recall quer
 The heuristic raises Recall@10 from **0.889 to 0.928**, and to **0.946** with kept pruned
 connections. At the same efSearch it costs more per query, because it evaluates more
 distances. Compared at *equal latency* (see the plot), both heuristic variants beat
-naive everywhere. For example, heuristic+keepPruned reaches 0.88 recall at 0.31 ms,
-while naive reaches 0.889 only at 0.43 ms. keepPruned beats the plain heuristic below
-about 0.45 ms, and the two curves converge above that. The heuristic keeps neighbours that point in
+naive everywhere. For example, heuristic+keepPruned reaches 0.88 recall at 0.32 ms,
+while naive reaches 0.889 only at 0.46 ms. keepPruned beats the plain heuristic by about
+0.008 recall near 0.29 ms; above about 0.5 ms the gap shrinks to about 0.003 and the two
+curves nearly converge. The heuristic keeps neighbours that point in
 different directions, which preserves the long-range links between clusters that a
 greedy walk needs. Naive selection spends its M links on a node's own tight cluster.
 
-### 5.4 Why the speedup (13.9×) is smaller than the work reduction (22.4×)
+### 5.4 Why the speedup (13.3×) is smaller than the work reduction (22.4×)
 At efSearch = 80, HNSW evaluates 22.4× fewer distances than brute force, but runs only
-13.9× faster. Per distance evaluation, brute force costs about 241 ns
-(7.487 ms / 31,013), while HNSW costs about 389 ns (0.538 ms / 1,384). HNSW pays for
+13.3× faster. Per distance evaluation, brute force costs about 240 ns
+(7.448 ms / 31,013), while HNSW costs about 406 ns (0.562 ms / 1,384). HNSW pays for
 random-access row reads (cache misses instead of a sequential stream), two heap
 operations per accepted neighbour, and visited-marker checks. Brute force streams the
 matrix linearly, which the hardware prefetcher handles well.
@@ -418,12 +419,12 @@ isolate.
 |---|---|---|
 | `EmbeddingStore::memoryBytes()` (shared by both backends) | 63,514,624 | 60.57 |
 | `BruteForceIndex::memoryBytes()` (id list) | 127,932 | 0.12 |
-| `HNSWIndex::memoryBytes()` (graph only) | 7,024,500 | 6.70 |
-| Peak RSS (VmHWM) after loading embeddings + queries | 70,295,552 | 67.04 |
-| Peak RSS at end of benchmark | 79,605,760 | 75.92 |
+| `HNSWIndex::memoryBytes()` (graph only) | 5,767,500 | 5.50 |
+| Peak RSS (VmHWM) after loading embeddings + queries | 70,426,624 | 67.16 |
+| Peak RSS at end of benchmark | 78,737,408 | 75.09 |
 
-So the HNSW graph adds about 11% on top of the vectors it indexes. After the rewrite the
-same graph reports `memoryBytes()` = 5,767,500 (5.50 MiB, about 9%), because the new array
+So the HNSW graph adds about 9% on top of the vectors it indexes. Before the rewrite the
+same graph reported `memoryBytes()` = 7,024,500 (6.70 MiB, about 11%); the new array
 classes carry less bookkeeping per node.
 
 `memoryBytes()` counts **reserved** capacity: 2M+1 ints per node on layer 0 and M+1 on
@@ -434,10 +435,11 @@ heuristic (18.6) and 3,311 KiB for naive (24.2). VmHWM also counts the C++ runti
 query file, the ground-truth result lists and allocator slack.
 
 ### 5.7 Query embedding time (reported separately, excluded from retrieval latency)
-The Python CLIP text encoder on CPU, including IPC, takes a median of **21.5 ms** and a
-p95 of 24.1 ms over 100 queries. That is roughly 40× the HNSW retrieval time. For an
+The Python CLIP text encoder on CPU, including IPC, takes a median of **25.6 ms** and a
+p95 of 38.8 ms over 100 queries (the encoder is not pinned, so its tail is noisier than
+the retrieval timings). That is roughly 45× the HNSW retrieval time. For an
 interactive user, end-to-end latency is dominated by the text encoder, not the index.
-At 31k images, even brute force (7.5 ms) is well under the encoder cost. The HNSW
+At 31k images, even brute force (7.4 ms) is well under the encoder cost. The HNSW
 advantage matters as the collection grows, because brute force scales linearly with N.
 
 ---
@@ -569,10 +571,13 @@ bookkeeping always equals a full recount.
 ## 8. Known limitations (honest list)
 
 1. **Benchmark noise.** The run was on a laptop with a desktop session open (IDE and a
-   chat app; load average 0.39), under the `powersave` governor with `intel_pstate`. P95
-   and mean are close to the median (brute force 7.49 / 7.57 / 7.50 ms), which suggests
-   noise is modest, but a quiet dedicated machine would be better. The numbers are from
-   one run; I did not repeat the whole benchmark to estimate run-to-run variance.
+   chat app; load average 0.25), under the `powersave` governor with `intel_pstate`. P95
+   and mean are close to the median (brute force 7.45 / 7.52 / 7.46 ms), which suggests
+   noise is modest, but a quiet dedicated machine would be better. An earlier run of the
+   pre-rewrite code gave latencies within about 5% of these (HNSW efSearch = 80: 0.538 ms
+   then, 0.562 ms now; brute force 7.487 ms then, 7.448 ms now). The code, kernel and
+   compiler build all changed between the two runs, so this is not a clean estimate of
+   run-to-run variance.
 2. **Near-tie fragility vs float64 NumPy.** In G7 the smallest adjacent-score gap was
    1.1e-6, only about 2.5× the float32 summation error (4.5e-7). On much larger query
    sets, occasional rank swaps against a float64 reference are possible. Swaps between
